@@ -1,0 +1,45 @@
+<div>
+  <mat-slide-toggle
+    [color]="'primary'"
+    [checked]="searchMode"
+    (toggleChange)="searchMode = !searchMode">
+    Search mode
+  </mat-slide-toggle>
+</div>
+
+<br>
+
+<ng-container *ngIf="searchMode">
+  <mat-card>
+    <mat-form-field appearance="fill" class="w-100">
+      <mat-label>Search...</mat-label>
+      <input matInput type="text" [ngModel]="searchValue$ | async" (ngModelChange)="searchValue$.next($event)">
+    </mat-form-field>
+  </mat-card>
+  <br>
+  <mat-card *ngIf="currencyPair$ | async as currencyPair">
+    <h4>{{currencyPair.fromPrice}} {{currencyPair.fromCode | uppercase}} equals:</h4>
+    <h1>{{currencyPair.toPrice}} {{currencyPair.toCode | uppercase}}</h1>
+  </mat-card>
+</ng-container>
+
+<ng-container *ngIf="!searchMode">
+  <mat-card class="d-flex">
+    <mat-form-field appearance="fill">
+      <mat-label>Currency</mat-label>
+      <mat-select>
+        <mat-option
+          *ngFor="let currency of (currencies$ | async)"
+          [value]="currency.code"
+          (onSelectionChange)="onSelectCurrency($event)">
+          {{currency.name}} ({{currency.code | uppercase}})
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-card>
+
+  <mat-card *ngFor="let currency of (currencyToMany$ | async)?.currencies" class="currency-item">
+    <div>{{currency.code | uppercase}}</div>
+    <div>{{currency.price}}</div>
+  </mat-card>
+</ng-container>
